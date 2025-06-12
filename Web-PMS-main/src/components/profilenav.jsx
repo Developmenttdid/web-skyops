@@ -4,11 +4,30 @@ import { useLocation } from "react-router-dom";
 const ProfileNav = () => {
   const location = useLocation();
   const [username, setUsername] = useState("");
+  const [profileImage, setProfileImage] = useState("/profile1.png");
+  const email = localStorage.getItem("email");
 
   useEffect(() => {
     const name = localStorage.getItem("name");
     setUsername(name);
-  }, []);
+
+    const fetchProfileImage = async () => {
+      try {
+        const response = await fetch(
+          `http://103.163.184.111:3000/profile-image?email=${encodeURIComponent(email)}&t=${Date.now()}`
+        );
+        const data = await response.json();
+        
+        if (data.exists && data.imageUrl) {
+          setProfileImage(`http://103.163.184.111:3000${data.imageUrl}?t=${Date.now()}`);
+        }
+      } catch (error) {
+        console.error("Error fetching profile image:", error);
+      }
+    };
+
+    fetchProfileImage();
+  }, [email]);
 
   return (
     <div
@@ -22,11 +41,14 @@ const ProfileNav = () => {
     >
       <div className="text-center mb-3">
         <img
-          src="/profile1.png"
+          src={profileImage}
           alt="Profile"
           className="rounded-circle"
           width="150"
           height="150"
+          onError={(e) => {
+            e.target.src = "/profile1.png";
+          }}
         />
         <h5
           className="mt-4"
@@ -58,7 +80,16 @@ const ProfileNav = () => {
           </a>
         </li>
         <li className="nav-item">
-          <a href="/" className="nav-link text-danger">
+          <a 
+            href="/" 
+            className="nav-link" 
+            style={{ color: "#dc3545" }}
+            onClick={(e) => {
+              e.preventDefault();
+              localStorage.clear();
+              window.location.href = "/";
+            }}
+          >
             Logout
           </a>
         </li>
