@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
@@ -17,10 +18,32 @@ function Header() {
   };
 
   const getLinkClass = (path) =>
-    location.pathname === path ? "fw-bold text-primary" : "text-white";   
+    location.pathname === path ? "fw-bold text-primary" : "text-white";
 
   const isFlightDatabaseActive = location.pathname.startsWith("/FlightDatabase");
   const isCompanyActive = location.pathname.startsWith("/Company");
+
+  const [profileImage, setProfileImage] = useState(process.env.PUBLIC_URL + "/profile1.png");
+  const email = localStorage.getItem("email");
+
+  useEffect(() => {
+    const fetchProfileImage = async () => {
+      try {
+        const response = await fetch(
+          `http://103.163.184.111:3000/profile-image?email=${encodeURIComponent(email)}&t=${Date.now()}`
+        );
+        const data = await response.json();
+
+        if (data.exists && data.imageUrl) {
+          setProfileImage(`http://103.163.184.111:3000${data.imageUrl}?t=${Date.now()}`);
+        }
+      } catch (error) {
+        console.error("Error fetching profile image:", error);
+      }
+    };
+
+    fetchProfileImage();
+  }, [email]);
 
   return (
     <header
@@ -163,16 +186,20 @@ function Header() {
                 aria-expanded="false"
               >
                 <img
-                  src={process.env.PUBLIC_URL + "/profile1.png"}
+                  src={profileImage}
                   alt="Profile"
                   width="32"
                   height="32"
                   className="rounded-circle border border-2 border-white"
+                  style={{ objectFit: "cover" }}
+                  onError={(e) => {
+                    e.target.src = process.env.PUBLIC_URL + "/profile1.png";
+                  }}
                 />
               </a>
               <ul className="dropdown-menu text-small">
                 <li>
-                  <Link to="/Profile/AccountDetails" className="dropdown-item">
+                  <Link to="/Profile/AccountDetails" className="dropdown-item"> 
                     Profile
                   </Link>
                 </li>
@@ -192,6 +219,7 @@ function Header() {
               </ul>
             </div>
           </div>
+
         </div>
       </div>
     </header>
