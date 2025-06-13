@@ -35,21 +35,40 @@ function ProjectStatus_db() {
   }, []);
 
   // INI UNTUK NAMPILIN DATA DARI DATABASE
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const codeFromUrl = urlParams.get("project_code");
+  // useEffect(() => {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   const codeFromUrl = urlParams.get("project_code");
 
-    console.log("Project Code dari URL:", codeFromUrl); // Debug 1
+  //   console.log("Project Code dari URL:", codeFromUrl); // Debug 1
 
-    if (codeFromUrl) {
-      // Simpan original project code ke localStorage dan state
-      localStorage.setItem("originalProjectCode", codeFromUrl);
-      setOriginalProjectCode(codeFromUrl);
-      fetchAllProjects(codeFromUrl);
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
+  //   if (codeFromUrl) {
+  //     // Simpan original project code ke localStorage dan state
+  //     localStorage.setItem("originalProjectCode", codeFromUrl);
+  //     setOriginalProjectCode(codeFromUrl);
+  //     fetchAllProjects(codeFromUrl);
+  //   } else {
+  //     setIsLoading(false);
+  //   }
+  // }, []);
+
+  // Di dalam useEffect untuk mengambil project code dari URL:
+useEffect(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const codeFromUrl = urlParams.get("project_code");
+  
+  // Tambahkan decodeURIComponent di sini
+  const decodedProjectCode = codeFromUrl ? decodeURIComponent(codeFromUrl) : "";
+  
+  console.log("Project Code dari URL (decoded):", decodedProjectCode);
+
+  if (decodedProjectCode) {
+    localStorage.setItem("originalProjectCode", decodedProjectCode);
+    setOriginalProjectCode(decodedProjectCode);
+    fetchAllProjects(decodedProjectCode);
+  } else {
+    setIsLoading(false);
+  }
+}, []);
 
   const fetchAllProjects = async (targetCode) => {
     setIsLoading(true);
@@ -662,3 +681,4 @@ function ProjectStatus_db() {
 }
 
 export default ProjectStatus_db;
+
