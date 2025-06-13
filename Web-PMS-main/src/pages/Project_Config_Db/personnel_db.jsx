@@ -83,7 +83,7 @@ function Personnel_db() {
   // Fetch personnel from backend
   const fetchExistingPersonnel = async (projectCode) => {
     try {
-      const response = await fetch(`http://103.163.184.111:3000/personnel?project_code=${projectCode}`);
+      const response = await fetch(`http://103.163.184.111:3000/personnel?project_code=${encodeURIComponent(projectCode)}`);
       if (response.ok) {
         const data = await response.json();
         setExistingPersonnel(data);
